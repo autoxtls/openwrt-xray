@@ -1,44 +1,39 @@
-name: Build
+name: Build Packages
 
 on:
-  push:
-    tags:
-      - v1.**
+  workflow_dispatch:
+  repository_dispatch:
+    types: [build]
 
 jobs:
   build:
-    name: Build ${{ matrix.arch }}
+    name: Build ${{ matrix.arch }}-${{ matrix.tag }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         arch:
           - x86_64
+        tag:
+          - openwrt-23.05
 
     steps:
-      - uses: actions/checkout@main
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Building packages
-        uses: sbwml/openwrt-gh-action-sdk@go1.22
+      - name: Build Packages
+        uses: sbwml/openwrt-gh-action-sdk@helloworld
         env:
-          ARCH: ${{ matrix.arch }}-openwrt-22.03
-          GOAMD64: v3
+          ARCH: ${{ matrix.arch }}-${{ matrix.tag }}
           FEEDNAME: packages_ci
           PACKAGES: xray-core
+          KEY_BUILD: ${{ secrets.sign_key }}
           NO_REFRESH_CHECK: true
+          IGNORE_ERRORS: true
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.arch }}
+          name: ${{ matrix.tag }}-${{ matrix.arch }}
           path: bin/packages/${{ matrix.arch }}/packages_ci/*.ipk
-
-      - name: Upload packages
-        uses: ncipollo/release-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
-          replacesArtifacts: true
-          artifacts: "bin/packages/${{ matrix.arch }}/packages_ci/*.ipk"
