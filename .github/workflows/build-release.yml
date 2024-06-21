@@ -26,7 +26,7 @@ jobs:
           ARCH: ${{ matrix.arch }}-openwrt-22.03
           GOAMD64: v3
           FEEDNAME: packages_ci
-          PACKAGES: xray
+          PACKAGES: xray-core
           NO_REFRESH_CHECK: true
 
       - name: Upload artifacts
