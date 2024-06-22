@@ -23,12 +23,11 @@ jobs:
           fetch-depth: 0
 
       - name: Build Packages
-        uses: sbwml/openwrt-gh-action-sdk@helloworld
+        uses: pmkol/openwrt-gh-action-sdk@main
         env:
           ARCH: ${{ matrix.arch }}-${{ matrix.tag }}
           FEEDNAME: packages_ci
           PACKAGES: xray-core
-          KEY_BUILD: ${{ secrets.sign_key }}
           NO_REFRESH_CHECK: true
           IGNORE_ERRORS: true
 
